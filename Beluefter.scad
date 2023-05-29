@@ -1,4 +1,4 @@
-include <tools.scad>
+include <banded.scad>
 
 /* [ring parameter] */
 // inner height without wall
@@ -110,7 +110,7 @@ function balance_holes (count) =
 	:[0,0]
 ;
 
-build()
+combine()
 {
 	Luefter_Ring();
 	
@@ -286,15 +286,15 @@ module Luefter_Ring_top ()
 	// Rundungen
 	rotate_extrude(convexity=4, $fn=fn_inner)
 	polygon( concat(
-		translate_list (
-			circle_curve(r=wall, angle=90, angle_begin=180, piece=false, $fn=8*fn_factor)
+		translate_points (
+			circle_curve(r=wall, angle=[90, 180], piece=false, $fn=8*fn_factor)
 			,[diameter/2+wall,0])
 		,[[diameter/2+wall+epsilon,0]]
 	));
 	rotate_extrude(convexity=4, $fn=fn_outer)
 	polygon( concat(
-		translate_list (
-			circle_curve(r=wall, angle=90, angle_begin=270, piece=false, $fn=8*fn_factor)
+		translate_points (
+			circle_curve(r=wall, angle=[90, 270], piece=false, $fn=8*fn_factor)
 			,[diameter/2+wall+bag,0])
 		,[[diameter/2+wall+bag-epsilon,0]]
 	));
@@ -304,12 +304,12 @@ module Luefter_Ring_top_old ()
 {
 	rotate_extrude(convexity=4)
 	polygon( concat(
-		translate_list (
-			circle_curve(r=wall, angle=90, angle_begin=180, piece=false, $fn=8*fn_factor)
+		translate_points (
+			circle_curve(r=wall, angle=[90, 180], piece=false, $fn=8*fn_factor)
 			,[diameter/2+wall,0])
 		,
-		translate_list (
-			circle_curve(r=wall, angle=90, angle_begin=270, piece=false, $fn=8*fn_factor)
+		translate_points (
+			circle_curve(r=wall, angle=[90, 270], piece=false, $fn=8*fn_factor)
 			,[diameter/2+wall+bag,0])
 	));
 }
@@ -327,8 +327,8 @@ module Tuelle_Ende (height=4, diameter=5.0, wall=1, seal=0.07)
 		[[diameter/2-wall,0]
 		//,[diameter/2-r_round,0]
 		]
-		,translate_list(
-			circle_curve(r=r_round, angle=seal_angle, angle_begin=270, piece=false, $fn=$fn/2)
+		,translate_points(
+			circle_curve(r=r_round, angle=[seal_angle, 270], piece=false, $fn=$fn/2)
 			,[diameter/2-r_round,r_round])
 		,[//[diameter/2,r_round],
 		  [diameter/2+seal,height_real*   seal_ratio +r_round-r_round*cos(seal_angle)]
