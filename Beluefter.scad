@@ -18,7 +18,7 @@ hole_place = "inner"; // ["inner", "outer", "both sides", "across", "across shif
 //
 hole_diameter = 1.0; // [1.0, 0.8, 0.61, 0.5, 0.35]
 //
-hole_ratio    = 1.0; // [0.1 : 0.05 : 5]
+hole_ratio    = 2.0; // [0.1 : 0.1 : 10]
 //
 hole_toggle   = "auto"; // ["auto", "yes", "no"]
 //
