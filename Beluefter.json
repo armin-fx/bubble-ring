@@ -1,0 +1,41 @@
+{
+    "parameterSets": {
+        "for PET-Bottle - holes": {
+            "bag": "2.6",
+            "diameter": "18",
+            "diameter_type": "outer",
+            "fn_factor": "4",
+            "height": "5",
+            "hole_diameter": "1",
+            "hole_place": "both sides",
+            "hole_ratio": "2",
+            "hole_toggle": "auto",
+            "hole_toggle_ratio": "0.67",
+            "hole_type": "hole",
+            "slicer_steg": "no",
+            "slot_height_ratio": "1",
+            "slot_ratio": "2",
+            "slot_width": "0.5",
+            "wall": "1.2"
+        },
+        "for PET-Bottles - slots": {
+            "bag": "2.6",
+            "diameter": "18",
+            "diameter_type": "outer",
+            "fn_factor": "4",
+            "height": "5",
+            "hole_diameter": "1",
+            "hole_place": "both sides",
+            "hole_ratio": "2",
+            "hole_toggle": "auto",
+            "hole_toggle_ratio": "0.67",
+            "hole_type": "slot",
+            "slicer_steg": "no",
+            "slot_height_ratio": "1",
+            "slot_ratio": "3",
+            "slot_width": "0.5",
+            "wall": "1.2"
+        }
+    },
+    "fileFormatVersion": "1"
+}
