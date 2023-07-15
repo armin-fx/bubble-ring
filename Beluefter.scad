@@ -3,8 +3,10 @@ include <banded.scad>
 /* [ring parameter] */
 // inner height without wall
 height   =  5;
-// inner diameter
+// diameter (inner or outer diameter of the ring)
 diameter = 15;
+//
+diameter_type = "inner"; // ["inner", outer]
 // inner air width
 bag      =  2.6;
 // wall thickness
@@ -40,6 +42,11 @@ slicer_steg = "no"; // ["no", "yes", "cut"]
 
 /* [Hidden] */
 
+diameter_inner =
+	diameter_type=="inner"
+		? diameter
+		: diameter - 2 * (bag + 2*wall)
+;
 //
 hole_cnt   = hole_ratio * (sqr(3.0) / sqr(hole_diameter));
 hole_cnt_q = quantize(hole_cnt,  1);
@@ -103,8 +110,8 @@ function balance_holes (count) =
 	 (hole_place=="inner") ? [quantize(count,1), 0]
 	:(hole_place=="outer") ? [0, quantize(count,1)]
 	:(hole_place=="both sides") ?
-		[quantize( count * ( (diameter/2+wall/2)   / ((diameter/2+wall/2)+(diameter/2+wall+bag)) ), 1)
-		,quantize( count * ( (diameter/2+wall+bag) / ((diameter/2+wall/2)+(diameter/2+wall+bag)) ), 1) ]
+		[quantize( count * ( (diameter_inner/2+wall/2)   / ((diameter_inner/2+wall/2)+(diameter_inner/2+wall+bag)) ), 1)
+		,quantize( count * ( (diameter_inner/2+wall+bag) / ((diameter_inner/2+wall/2)+(diameter_inner/2+wall+bag)) ), 1) ]
 	:(hole_place=="across")         ? [      quantize(count,2)/2, quantize(count,2)/2]
 	:(hole_place=="across shifted") ? [count-quantize(count,2)/2, quantize(count,2)/2]
 	:[0,0]
@@ -114,7 +121,7 @@ combine()
 {
 	Luefter_Ring();
 	
-	pos_tuelle = [(diameter+max(5.0,bag+2*wall))/2, 0, height];
+	pos_tuelle = [(diameter_inner+max(5.0,bag+2*wall))/2, 0, height];
 	//
 	union ()
 	{
@@ -122,7 +129,7 @@ combine()
 		translate(pos_tuelle) Tuelle_Schaft(height=6, $fn=fn_tuelle); translate_z(6)
 		translate(pos_tuelle) Tuelle_Ende  (height=4, $fn=fn_tuelle);
 		//
-		if (norm([pos_tuelle[0], pos_tuelle[1]]) > diameter/2 +wall+bag+wall - 5.0/2)
+		if (norm([pos_tuelle[0], pos_tuelle[1]]) > diameter_inner/2 +wall+bag+wall - 5.0/2)
 			render()
 			difference()
 			{
@@ -131,7 +138,7 @@ combine()
 				cylinder(h=d, d1=d/2, d2=d, $fn=fn_tuelle);
 				//
 				translate_z(-extra)
-				cylinder(h=height+extra, r=diameter/2+wall+bag+wall-epsilon, $fn=fn_outer);
+				cylinder(h=height+extra, r=diameter_inner/2+wall+bag+wall-epsilon, $fn=fn_outer);
 			}
 	}
 	
@@ -156,17 +163,17 @@ module Luefter_Ring ()
 	difference()
 	{
 		// Grundkörperwand innen
-		ring_square(h=height, di=diameter, w=wall, $fn=fn_inner);
+		ring_square(h=height, di=diameter_inner, w=wall, $fn=fn_inner);
 		
 		// Löcher
 		if (hole_type=="hole")
 		{
-			create_hole(hole_inner_count, diameter/2+wall+extra, 0,
+			create_hole(hole_inner_count, diameter_inner/2+wall+extra, 0,
 				swap_toggle=(hole_place=="across shifted") ? true : false );
 		}
 		else if (hole_type=="slot")
 		{
-			create_slot(slot_inner_count, diameter/2+wall+extra, 0,
+			create_slot(slot_inner_count, diameter_inner/2+wall+extra, 0,
 				drift= (hole_place=="both sides"||hole_place=="across shifted") ? 0.5 : 0 );
 		}
 	}
@@ -174,17 +181,17 @@ module Luefter_Ring ()
 	difference()
 	{
 		// Grundkörperwand außen
-		ring_square(h=height, di=diameter+2*(wall + bag), w=wall, $fn=fn_outer);
+		ring_square(h=height, di=diameter_inner+2*(wall + bag), w=wall, $fn=fn_outer);
 		
 		// Löcher
 		if (hole_type=="hole")
 		{
-			create_hole(hole_outer_count, bag+wall, diameter/2+wall+extra,
+			create_hole(hole_outer_count, bag+wall, diameter_inner/2+wall+extra,
 				drift= (hole_place=="across shifted" && !is_hole_toggle(hole_outer_count)) ? 0.5 : 0 );
 		}
 		if (hole_type=="slot")
 		{
-			create_slot(slot_outer_count, bag+wall, diameter/2+wall+extra);
+			create_slot(slot_outer_count, bag+wall, diameter_inner/2+wall+extra);
 		}
 	}
 	
@@ -200,11 +207,11 @@ module Luefter_Ring ()
 			s_wall   = 1.4;
 			s_gap    = 0.1;
 			s_height = 0.125;
-			s_count  = round((diameter+wall*2+bag)*PI / (s_wall+s_gap));
+			s_count  = round((diameter_inner+wall*2+bag)*PI / (s_wall+s_gap));
 			render()
 			for (a=[0 : 360/s_count : 360-epsilon])
 				rotate_z(a)
-				translate([diameter/2+wall, -s_gap/2, height-extra])
+				translate([diameter_inner/2+wall, -s_gap/2, height-extra])
 				cube([bag, s_gap, s_height+extra])
 			;
 		}
@@ -216,10 +223,10 @@ module Luefter_Ring ()
 		s_wall   = 1.0;
 		s_gap    = 0.5;
 		s_height = 0.1;
-		s_count  = round((diameter+wall*2+bag)*PI / (s_wall+s_gap));
+		s_count  = round((diameter_inner+wall*2+bag)*PI / (s_wall+s_gap));
 		for (a=[0 : 360/s_count : 360-epsilon])
 			rotate_z(a)
-			translate([diameter/2+wall-wall/2, -s_wall/2, height-s_height])
+			translate([diameter_inner/2+wall-wall/2, -s_wall/2, height-s_height])
 			cube([bag+wall, s_wall, s_height])
 		;
 	}
@@ -280,23 +287,23 @@ module Luefter_Ring_top ()
 	// Scheibe
 	difference()
 	{
-		translate_z(-wall)       cylinder(h=wall        , r=diameter/2+wall+bag, $fn=fn_outer);
-		translate_z(-wall-extra) cylinder(h=wall+extra*2, r=diameter/2+wall    , $fn=fn_inner);
+		translate_z(-wall)       cylinder(h=wall        , r=diameter_inner/2+wall+bag, $fn=fn_outer);
+		translate_z(-wall-extra) cylinder(h=wall+extra*2, r=diameter_inner/2+wall    , $fn=fn_inner);
 	}
 	// Rundungen
 	rotate_extrude(convexity=4, $fn=fn_inner)
 	polygon( concat(
 		translate_points (
 			circle_curve(r=wall, angle=[90, 180], piece=false, $fn=8*fn_factor)
-			,[diameter/2+wall,0])
-		,[[diameter/2+wall+epsilon,0]]
+			,[diameter_inner/2+wall,0])
+		,[[diameter_inner/2+wall+epsilon,0]]
 	));
 	rotate_extrude(convexity=4, $fn=fn_outer)
 	polygon( concat(
 		translate_points (
 			circle_curve(r=wall, angle=[90, 270], piece=false, $fn=8*fn_factor)
-			,[diameter/2+wall+bag,0])
-		,[[diameter/2+wall+bag-epsilon,0]]
+			,[diameter_inner/2+wall+bag,0])
+		,[[diameter_inner/2+wall+bag-epsilon,0]]
 	));
 }
 
@@ -306,11 +313,11 @@ module Luefter_Ring_top_old ()
 	polygon( concat(
 		translate_points (
 			circle_curve(r=wall, angle=[90, 180], piece=false, $fn=8*fn_factor)
-			,[diameter/2+wall,0])
+			,[diameter_inner/2+wall,0])
 		,
 		translate_points (
 			circle_curve(r=wall, angle=[90, 270], piece=false, $fn=8*fn_factor)
-			,[diameter/2+wall+bag,0])
+			,[diameter_inner/2+wall+bag,0])
 	));
 }
 
