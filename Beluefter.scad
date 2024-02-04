@@ -117,7 +117,7 @@ function balance_holes (count) =
 	:[0,0]
 ;
 
-combine()
+combine_fixed()
 {
 	Luefter_Ring();
 	
