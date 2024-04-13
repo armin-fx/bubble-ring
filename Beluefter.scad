@@ -1,4 +1,7 @@
-include <banded.scad>
+// Description:
+//
+// A 3D model for a bubble ring for aquarium.
+// For an aquarium air hose with 4mm inner diameter.
 
 /* [ring parameter] */
 // inner height without wall
@@ -41,6 +44,9 @@ fn_factor=4;
 slicer_steg = "no"; // ["no", "yes", "cut"]
 
 /* [Hidden] */
+
+include <banded.scad>
+required_version ([2,10,1]);
 
 diameter_inner =
 	diameter_type=="inner"
@@ -163,7 +169,7 @@ module Luefter_Ring ()
 	difference()
 	{
 		// Grundkörperwand innen
-		ring_square(h=height, di=diameter_inner, w=wall, $fn=fn_inner);
+		tube(h=height, di=diameter_inner, w=wall, $fn=fn_inner);
 		
 		// Löcher
 		if (hole_type=="hole")
@@ -181,7 +187,7 @@ module Luefter_Ring ()
 	difference()
 	{
 		// Grundkörperwand außen
-		ring_square(h=height, di=diameter_inner+2*(wall + bag), w=wall, $fn=fn_outer);
+		tube(h=height, di=diameter_inner+2*(wall + bag), w=wall, $fn=fn_outer);
 		
 		// Löcher
 		if (hole_type=="hole")
@@ -349,7 +355,7 @@ module Tuelle_Ende (height=4, diameter=5.0, wall=1, seal=0.07)
 
 module Tuelle_Schaft (height=10, diameter=5.0, wall=1)
 {
-	ring_square(h=height, do=diameter, w=wall);
+	tube(h=height, do=diameter, w=wall);
 }
 
 module Tuelle_Schaft_cut (height=10, diameter=5.0, wall=1)
