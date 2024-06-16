@@ -46,7 +46,7 @@ slicer_steg = "no"; // ["no", "yes", "cut"]
 /* [Hidden] */
 
 include <banded.scad>
-required_version ([2,10,1]);
+required_version ([3,0,0]);
 
 diameter_inner =
 	diameter_type=="inner"
